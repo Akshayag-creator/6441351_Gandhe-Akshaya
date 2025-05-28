@@ -1,5 +1,6 @@
-CREATE DATABASE my_schema;
-USE my_schema;
+CREATE DATABASE EventManagement;
+USE EventManagement;
+
 CREATE TABLE users (
 	user_id INT PRIMARY KEY AUTO_INCREMENT,
     full_name VARCHAR(100) NOT NULL,
@@ -112,6 +113,7 @@ select * from Users,Events,Sessions,Registrations,Feedback,Resources;
 
  -- Question 1:
  -- USER UPCOMING EVENTS
+
 SELECT
     e.event_id,
     e.title,
@@ -132,9 +134,11 @@ WHERE
     AND u.user_id = u.user_id
 ORDER BY
     e.start_date ASC;
-    
+
+
 -- Question 2:
 -- TOP RATED EVENTS
+
 SELECT
     e.event_id,
     e.title,
@@ -151,6 +155,7 @@ HAVING
 ORDER BY
     avg_rating DESC;
 
+
 -- Question 3:
 -- INACTIVE USERS
 
@@ -166,6 +171,7 @@ LEFT JOIN
 WHERE
     r.registration_id IS NULL;
 
+
 -- Question 4:
 -- PEAK SESSION HOURS
 
@@ -179,9 +185,11 @@ WHERE
     AND TIME(end_time) <= '12:00:00'
 GROUP BY
     event_id;
-    
+
+
 -- Question 5
 -- MOST ACTIVE CITIES
+
 SELECT
     u.city,
     COUNT(DISTINCT r.user_id) AS user_count
@@ -195,8 +203,10 @@ ORDER BY
     user_count DESC
 LIMIT 5;
 
+
 -- Question 6
 -- EVENT RESOURSE SUMMARY
+
 SELECT
     event_id,
     SUM(CASE WHEN resource_type = 'pdf' THEN 1 ELSE 0 END) AS pdf_count,
@@ -206,6 +216,8 @@ FROM
     resources
 GROUP BY
     event_id;
+
+
 -- Questin 7
 -- LOW FEEDBACK ALERTS
 
@@ -223,8 +235,11 @@ JOIN
     events e ON f.event_id = e.event_id
 WHERE
     f.rating < 3;
+
+
 -- Question 8
 -- SESSIONS PER UPCOMING EVENT
+
 SELECT
     e.event_id,
     e.title,
@@ -237,6 +252,8 @@ WHERE
     e.status = 'upcoming'
 GROUP BY
     e.event_id, e.title;
+
+
 -- Question 9
 -- ORGANIZER EVENT SUMMARY
 
@@ -248,8 +265,11 @@ FROM
     events e
 GROUP BY
     e.organizer_id, e.status;
+
+
 -- Question 10
 -- FEEDBACK GAP
+
 SELECT
     e.event_id,
     e.title
@@ -263,9 +283,11 @@ WHERE
     f.feedback_id IS NULL
 GROUP BY
     e.event_id, e.title;
-    
+
+
 -- Question 11
 -- DAILY NEW USER COUNT
+
 SELECT
     registration_date,
     COUNT(user_id) AS new_users
@@ -278,8 +300,10 @@ GROUP BY
 ORDER BY
     registration_date DESC;
 
+
 -- Question 12
 -- EVENT WITH MAXIMUM SESSIONS
+
 SELECT
     event_id,
     COUNT(session_id) AS session_count
@@ -290,8 +314,11 @@ GROUP BY
 ORDER BY
     session_count DESC
 LIMIT 1;
+
 -- Question 13
 -- AVERAGE RATING PER CITY
+
+
 SELECT
     e.city,
     AVG(f.rating) AS avg_rating
@@ -301,8 +328,11 @@ JOIN
     feedback f ON e.event_id = f.event_id
 GROUP BY
     e.city;
+
+
 -- Question 14
 -- MOST REGISTERED EVENTS
+
 SELECT
     e.event_id,
     e.title,
@@ -316,8 +346,11 @@ GROUP BY
 ORDER BY
     registration_count DESC
 LIMIT 3;
+
+
 -- Question 15
 -- EVENT SESSION TIME CONFLICT
+
 SELECT
     s1.event_id,
     s1.session_id AS session1,
@@ -329,8 +362,11 @@ JOIN
     AND s1.session_id < s2.session_id
     AND s1.start_time < s2.end_time
     AND s1.end_time > s2.start_time;
+
+
 -- Question 16
 -- UNREGISTERED ACTIVE USERS
+
 SELECT
     u.user_id,
     u.full_name
@@ -342,8 +378,10 @@ WHERE
     u.registration_date >= CURRENT_DATE - INTERVAL 30 DAY
     AND r.registration_id IS NULL;
 
+
 -- Question 17
 -- MULTI-SESSION SPEAKERS
+
 SELECT
     speaker_name,
     COUNT(session_id) AS session_count
@@ -353,8 +391,11 @@ GROUP BY
     speaker_name
 HAVING
     COUNT(session_id) > 1;
+
+
 -- Question 18
 -- RESOURSE AVAILABILITY CHECK 
+
 SELECT
     e.event_id,
     e.title
@@ -364,8 +405,11 @@ LEFT JOIN
     resources r ON e.event_id = r.event_id
 WHERE
     r.resource_id IS NULL;
+
+
 -- Question 19
 -- COMPLETED EVENTS WITH FEEDBACK SUMMARY
+
 SELECT
     e.event_id,
     e.title,
@@ -381,8 +425,10 @@ WHERE
     e.status = 'completed'
 GROUP BY
     e.event_id, e.title;
+
 -- Question 20
 -- USER ENGAGEMENT INDEX
+
 SELECT
     u.user_id,
     u.full_name,
@@ -396,8 +442,11 @@ LEFT JOIN
     feedback f ON u.user_id = f.user_id
 GROUP BY
     u.user_id, u.full_name;
+
+
 -- Question 21
 -- TOP FEEDBACK PROVIDERS
+
 SELECT
     u.user_id,
     u.full_name,
@@ -411,8 +460,11 @@ GROUP BY
 ORDER BY
     feedback_count DESC
 LIMIT 5;
+
+
 -- Question 22
 -- DUPLICATE REGISTRATIONS CHECK 
+
 SELECT
     user_id,
     event_id,
@@ -423,8 +475,11 @@ GROUP BY
     user_id, event_id
 HAVING
     COUNT(*) > 1;
+
+
 -- Question 23
 -- REGISTRATION TRENDS
+
 SELECT
     DATE_FORMAT(registration_date, '%Y-%m-01') AS month,
     COUNT(registration_id) AS registration_count
@@ -437,8 +492,10 @@ GROUP BY
 ORDER BY
     month;
 
+
 -- Question 24
 -- AVERAGE SESSION DURATION PER EVENT
+
 SELECT
     event_id,
     AVG(TIMESTAMPDIFF(SECOND, start_time, end_time) / 60) AS avg_duration_minutes
@@ -447,8 +504,10 @@ FROM
 GROUP BY
     event_id;
 
+
 -- Question 25
 -- EVENTS WIITHOUT SESSIONS
+
 SELECT
     e.event_id,
     e.title
@@ -458,8 +517,4 @@ LEFT JOIN
     sessions s ON e.event_id = s.event_id
 WHERE
     s.session_id IS NULL;
-
-
-
-
 
